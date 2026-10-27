@@ -1,0 +1,72 @@
+{
+  "manifest_version": 3,
+  "name": "AFFI_PRO Automation Bridge",
+  "version": "2.1.0",
+  "description": "Bridge สำหรับดึง TikTok Cookie อัตโนมัติ + Meta AI สร้างคลิป + TikTok Studio ปักตะกร้า (ใช้ Flow เดิมของ JarbLand 100%)",
+  "icons": {
+    "16": "icons/icon.png",
+    "48": "icons/icon.png",
+    "128": "icons/icon.png"
+  },
+  "permissions": [
+    "cookies",
+    "tabs",
+    "storage",
+    "unlimitedStorage",
+    "scripting",
+    "activeTab",
+    "debugger",
+    "downloads",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://*.tiktok.com/*",
+    "https://*.tiktokshop.com/*",
+    "https://shop.tiktok.com/*",
+    "https://*.tiktokglobalshop.com/*",
+    "https://*.tiktokcdn.com/*",
+    "https://*.tiktokcdn-us.com/*",
+    "https://*.byteimg.com/*",
+    "https://*.ibyteimg.com/*",
+    "https://*.ibytedtos.com/*",
+    "https://meta.ai/*",
+    "https://www.meta.ai/*",
+    "https://*.fbcdn.net/*",
+    "https://*.cdninstagram.com/*",
+    "http://localhost:5173/*",
+    "http://localhost:3001/*",
+    "http://127.0.0.1:5173/*",
+    "http://127.0.0.1:3001/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://localhost:5173/*",
+        "http://127.0.0.1:5173/*",
+        "http://localhost:3001/*"
+      ],
+      "js": ["bridge.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://meta.ai/*",
+        "https://www.meta.ai/*"
+      ],
+      "js": ["meta_bot.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.tiktok.com/tiktokstudio/upload*",
+        "https://www.tiktok.com/creator-center/upload*",
+        "https://www.tiktok.com/upload*"
+      ],
+      "js": ["tiktok_bot.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
