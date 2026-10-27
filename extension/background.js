@@ -747,6 +747,24 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 
+  // ─── TikTok Bot reports post completed (or dry-run basket tagged) ───
+  if (message?.type === "AFFI_PRO_POST_COMPLETE") {
+    (async () => {
+      console.log(`[AFFI_PRO] TikTok post completed: jobId=${message.jobId}, success=${message.success}`);
+      await fetch("http://localhost:3001/api/worker/post-complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jobId: message.jobId,
+          success: message.success,
+          error: message.error
+        })
+      }).catch((e) => console.warn("[AFFI_PRO] post-complete notify error:", e));
+      return { ok: true };
+    })().then(sendResponse).catch(() => sendResponse({ ok: false }));
+    return true;
+  }
+
   // ─── Dashboard: Start TikTok posting ───
   if (message.type === "AFFI_PRO_START_TIKTOK_POST") {
     (async () => {
@@ -873,6 +891,7 @@ async function prepareTikTokPostJob(
       queueJobId: jobId || "",
       caption: caption,
       dryRun: dryRun,
+      autoPost: !dryRun,
       product: {
         productId: productId || "",
         name: productName || "",

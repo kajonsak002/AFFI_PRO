@@ -1292,6 +1292,11 @@ async function completePostSubmission(job) {
     await updateJob({ status: completedStatus, postedAt: Date.now(), videoDataUrl: "" });
     await finishHistory(job, completedStatus);
     showStatus(job.nativeSchedule ? "ตั้งเวลาใน TikTok Studio สำเร็จแล้ว" : "โพสต์สำเร็จแล้ว BOT ทำงานครบ", "success");
+    chrome.runtime.sendMessage({
+      type: "AFFI_PRO_POST_COMPLETE",
+      jobId: job.queueJobId || job.id,
+      success: true
+    }).catch(() => {});
     return true;
   }
   await updateJob({ status: "submitted_unconfirmed", error: "TikTok ยังไม่ยืนยันผลโพสต์ กรุณาตรวจใน TikTok Studio ก่อนลองใหม่" });
@@ -1434,7 +1439,13 @@ async function runPostAutomation() {
 
     if (!job.autoPost) {
       await updateJob({ status: "ready_manual", preparedAt: Date.now() });
-      showStatus("วิดีโอ แคปชัน และสินค้าพร้อมแล้ว กรุณากด Post เอง", "success");
+      showStatus("วิดีโอ แคปชัน และสินค้าพร้อมแล้ว กรุณากด Post เอง (Dry-Run: ปักตะกร้าสำเร็จ)", "success");
+      chrome.runtime.sendMessage({
+        type: "AFFI_PRO_POST_COMPLETE",
+        jobId: job.queueJobId || job.id,
+        success: true,
+        dryRun: true
+      }).catch(() => {});
       return;
     }
 
